@@ -1,6 +1,9 @@
 This project was bootstrapped with
 [Create React App](https://github.com/facebook/create-react-app).
 
+## Introduction
+This project is the front-end for the contribution and display of Jisedai V-plus Next, the club activity.
+
 ## Available Scripts
 
 In the project directory, you can run:
