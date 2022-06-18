@@ -320,6 +320,7 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: '投稿提交',
     href: '/contribute',
+    isImplemented: true,
   },
   {
     label: '欣赏小作文',
