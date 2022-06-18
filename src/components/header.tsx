@@ -77,7 +77,6 @@ const DesktopNav = () => {
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
   const toast = useToast();
-  const currentURL = window.location.pathname;
   return (
     <Stack direction={'row'} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
@@ -87,7 +86,7 @@ const DesktopNav = () => {
               {navItem.isImplemented ? (
                 <Link
                   p={2}
-                  href={navItem.href ? (navItem.href === currentURL ? '#' : navItem.href) : '#'}
+                  href={navItem.href ?? '#'}
                   fontSize={'sm'}
                   fontWeight={500}
                   color={linkColor}
@@ -320,11 +319,6 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: '投稿提交',
     href: '/contribute',
-  },
-  {
-    label: '欣赏小作文',
-    href: '/view',
-    isImplemented: true,
   },
   {
     label: '其他',
