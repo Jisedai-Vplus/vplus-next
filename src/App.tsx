@@ -1,7 +1,8 @@
-import { ChakraProvider, Box, Grid, theme } from '@chakra-ui/react';
+import * as React from 'react';
+import { ChakraProvider, Box, Text, Link, VStack, Code, Grid, theme } from '@chakra-ui/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { ColorModeSwitcher } from './ColorModeSwitcher';
 import ViewView from './pages/view';
-import ContributeView from './pages/contribute';
 
 export const App = () => (
   <ChakraProvider theme={theme}>
@@ -10,7 +11,6 @@ export const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/view" element={<ViewView />}></Route>
-            <Route path="/contribute" element={<ContributeView />}></Route>
           </Routes>
         </BrowserRouter>
       </Grid>
