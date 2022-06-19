@@ -34,7 +34,7 @@ export function useApi(token?: string) {
       baseURL: '/api',
     });
 
-    axios.interceptors.request.use((req) => {
+    axios.interceptors.request.use((req: any) => {
       token &&
         (req.headers = {
           authorization: `Bearer ${token}`,
@@ -43,8 +43,8 @@ export function useApi(token?: string) {
     });
 
     axios.interceptors.response.use(
-      (res) => res,
-      (err) => {
+      (res: any) => res,
+      (err: any) => {
         console.log(err.response.status);
         err.code = err.response.data.code;
         err.msg = err.response.data.msg;
