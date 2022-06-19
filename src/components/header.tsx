@@ -24,7 +24,7 @@ export default function WithSubnavigation() {
   return (
     <Box>
       <Flex
-        bg={useColorModeValue('gray.100'/*'#39c5bb'*/, 'gray.800')}
+        bg={useColorModeValue('gray.200'/*'#39c5bb'*/, 'gray.700')}
         color={useColorModeValue('gray.600', 'white')}
         minH={'60px'}
         py={{ base: 2 }}
@@ -86,7 +86,7 @@ const DesktopNav = () => {
               {navItem.isImplemented ? (
                 <Link
                   p={2}
-                  href={navItem.href ?? '#'}
+                  href={navItem.href ?? ''}
                   fontSize={'sm'}
                   fontWeight={500}
                   color={linkColor}
@@ -314,14 +314,21 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: '主页',
     href: '/',
-    isImplemented: false,
+    isImplemented: true,
   },
   {
     label: '投稿提交',
     href: '/contribute',
+    isImplemented: false,
+  },
+  {
+    label: '观赏小作文',
+    href: '/view',
+    isImplemented: true,
   },
   {
     label: '其他',
     href: '/else',
+    isImplemented: false,
   },
 ];
