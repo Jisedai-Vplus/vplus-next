@@ -208,3 +208,44 @@ export interface TimelineApiReturn {
     data: Array<any>;
   };
 }
+
+// get View All Games
+export interface GameItem {
+    id: number;
+    created: string;
+    ext: string;
+    creatorid: number;
+    status: string;
+    title: string;
+}
+
+export interface ViewAllGamesQuery {
+  mode?: string;
+}
+
+export interface ViewAllGamesApiReturn extends Array<GameItem>{}
+
+// get View Posts of Game
+export interface PostItem {
+  id: number;
+  gameid: number;
+  created: string;
+  title: string;
+  body: string;
+  diva: string; 
+  producer: string;
+  playerid: number;
+  playername: string;
+  url: string;
+} 
+
+export interface ViewGamePostsQuery {
+  gameid: number;
+  mode?: string;
+}
+
+export interface ViewGamePostsApiReturn {
+  gameid: number;
+  title: string;
+  posts: Array<PostItem>;
+}

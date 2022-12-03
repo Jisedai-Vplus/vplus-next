@@ -23,15 +23,17 @@ import {
   TimelineApiReturn,
   TimelineQueryModel,
   UserApiReturn,
+  ViewAllGamesApiReturn,
+  ViewAllGamesQuery,
+  ViewGamePostsQuery,
+  ViewGamePostsApiReturn,
 } from './apiModels';
-import {} from './apiModels.d';
 
-// Access ddhelper api endpoints.
+// Access vplusnext-backend api endpoints.
 export function useApi(token?: string) {
   const axios = useMemo(() => {
     const axios = Axios.create({
-      // baseURL: process.env.REACT_APP_API_BASE,
-      baseURL: '/api',
+      baseURL: process.env.REACT_APP_API_BASE,
     });
 
     axios.interceptors.request.use((req: any) => {
@@ -60,6 +62,36 @@ export function useApi(token?: string) {
   }, [token]);
 
   return {
+    getViewAllGames: useCallback(
+      async (qvalues: ViewAllGamesQuery, token?: string): Promise<ViewAllGamesApiReturn> =>
+        (
+          await axios.get<ViewAllGamesApiReturn>(
+            '/view/allgames',
+            token
+              ? {
+                  headers: { authorization: `Bearer ${token}` },
+                  params: qvalues,
+                }
+              : { params: qvalues }
+          )
+        ).data,
+      [axios]
+    ),
+    getViewGamePosts: useCallback(
+      async (qvalues: ViewGamePostsQuery, token?: string): Promise<ViewGamePostsApiReturn> =>
+        (
+          await axios.get<ViewGamePostsApiReturn>(
+            '/view/game',
+            token
+              ? {
+                  headers: { authorization: `Bearer ${token}` },
+                  params: qvalues,
+                }
+              : { params: qvalues }
+          )
+        ).data,
+      [axios]
+    ),
     postLogin: useCallback(
       async (values: FormData): Promise<LoginApiReturn> =>
         (await axios.post<LoginApiReturn>('/account/login/', values)).data,
