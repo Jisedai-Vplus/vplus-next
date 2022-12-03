@@ -1,25 +1,25 @@
-import React from 'react';
-
 import {
-  Text,
-  Flex,
+  Box,
   Circle,
+  Container,
+  Flex,
+  Heading,
   HStack,
+  Spacer,
   Stat,
   StatLabel,
   StatNumber,
-  VStack,
-  Box,
-  Heading,
-  Spacer,
+  Text,
   useColorModeValue,
-  Container,
+  VStack,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 const ContributorsBlock = (props: { citems: Array<ContributorItem> }) => {
   interface ContributorBadgeItem {
     cname: string;
     count: number;
+    gameid: number;
   }
   const { citems } = props;
   const color_palette = [
@@ -39,7 +39,7 @@ const ContributorsBlock = (props: { citems: Array<ContributorItem> }) => {
   let citems_trim = Array<ContributorBadgeItem>();
   let citems_block = Array<Array<ContributorBadgeItem>>();
   for (let idx = 0; idx < citems.length; idx++) {
-    const badge_item = { cname: citems[idx].cname, count: 1 };
+    const badge_item = { cname: citems[idx].cname, count: 1, gameid: citems[idx].gameid };
     if (citems_trim.filter((e) => e.cname === citems[idx].cname).length > 0) {
       let exist_idx = citems_trim.findIndex((e) => e.cname === citems[idx].cname);
       citems_trim[exist_idx].count += 1;
@@ -62,19 +62,21 @@ const ContributorsBlock = (props: { citems: Array<ContributorItem> }) => {
           {citems_block.map((line) => (
             <HStack spacing={20}>
               {line.map((citem) => (
-                <Circle
-                  size={citem.count === 2 ? '180px' : '120px'}
-                  bg={color_palette[Math.floor(Math.random() * color_palette.length)]}
-                >
-                  <Stat>
-                    <StatLabel fontSize={citem.count === 2 ? 'sm' : 'sm'} color={textColor}>
-                      投稿人
-                    </StatLabel>
-                    <StatNumber fontSize={citem.count === 2 ? '3xl' : 'lg'} color={textColor}>
-                      {citem.cname}
-                    </StatNumber>
-                  </Stat>
-                </Circle>
+                <Link to="/view" state={{ gameid: citem.gameid }}>
+                  <Circle
+                    size={citem.count === 2 ? '180px' : '120px'}
+                    bg={color_palette[Math.floor(Math.random() * color_palette.length)]}
+                  >
+                    <Stat>
+                      <StatLabel fontSize={citem.count === 2 ? 'sm' : 'sm'} color={textColor}>
+                        投稿人
+                      </StatLabel>
+                      <StatNumber fontSize={citem.count === 2 ? '3xl' : 'lg'} color={textColor}>
+                        {citem.cname}
+                      </StatNumber>
+                    </Stat>
+                  </Circle>
+                </Link>
               ))}
             </HStack>
           ))}
@@ -92,21 +94,23 @@ const ContributorsBlock = (props: { citems: Array<ContributorItem> }) => {
               <Flex alignItems="center" gap={3}>
                 {line.map((citem) => (
                   <Box>
-                    <Circle
-                      size={citem.count === 2 ? '102' : '70'}
-                      bg={color_palette[Math.floor(Math.random() * color_palette.length)]}
-                    >
-                      <VStack spacing={0}>
-                        <Text fontSize={citem.count === 2 ? 'sm' : 'sm'} color={textColor}>
-                          投稿人
-                        </Text>
-                        <Container maxW='9ch'>
-                          <Heading fontSize={citem.count === 2 ? 'xl' : 'sm'} color={textColor}>
-                            {citem.cname}
-                          </Heading>
-                        </Container>
-                      </VStack>
-                    </Circle>
+                    <Link to="/view" state={{ gameid: citem.gameid }}>
+                      <Circle
+                        size={citem.count === 2 ? '102' : '70'}
+                        bg={color_palette[Math.floor(Math.random() * color_palette.length)]}
+                      >
+                        <VStack spacing={0}>
+                          <Text fontSize={citem.count === 2 ? 'sm' : 'sm'} color={textColor}>
+                            投稿人
+                          </Text>
+                          <Container maxW="9ch">
+                            <Heading fontSize={citem.count === 2 ? 'xl' : 'sm'} color={textColor}>
+                              {citem.cname}
+                            </Heading>
+                          </Container>
+                        </VStack>
+                      </Circle>
+                    </Link>
                     <Spacer />
                   </Box>
                 ))}
@@ -122,6 +126,7 @@ const ContributorsBlock = (props: { citems: Array<ContributorItem> }) => {
 export interface ContributorItem {
   time?: string;
   cname: string;
+  gameid: number;
 }
 
 export default ContributorsBlock;
