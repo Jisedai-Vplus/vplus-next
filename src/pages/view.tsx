@@ -1,78 +1,93 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { useColorModeValue } from '@chakra-ui/color-mode';
 import {
   Box,
   Container,
+  Flex,
   Grid,
-  StackDivider,
-  VStack,
-  useColorModeValue,
   Heading,
-  Text,
+  StackDivider,
   Stat,
   StatLabel,
   StatNumber,
-  Flex,
+  Text,
+  VStack,
 } from '@chakra-ui/react';
 
+import { useLocation } from 'react-router-dom';
 import WithSubnavigation from '../components/header';
-import { VIEW_ITEMS } from './viewitems';
+import { useApi } from '../utils/apiClient';
+import { PostItem, ViewGamePostsApiReturn } from '../utils/apiModels';
 
 const ViewView: React.FC = () => {
+  const { getViewGamePosts } = useApi();
+  const [GamePostsData, setGamePostsData] = useState<ViewGamePostsApiReturn>();
+  const [loaded, setLoaded] = useState<boolean>();
+  const location = useLocation();
+  const from = location.state as { gameid: number };
+  useEffect(() => {
+    async function fetch() {
+      let gameid = 0;
+      if (from) {
+        gameid = from.gameid;
+      }
+      const GamePostsResponse = await getViewGamePosts({ gameid: gameid });
+      setGamePostsData(GamePostsResponse);
+      setLoaded(true);
+    }
+    fetch();
+  }, [getViewGamePosts]);
+  const dividercolor = useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600');
   return (
     <Box
       bg={useColorModeValue('gray.50' /*'#39c5bb'*/, 'gray.800')}
       color={useColorModeValue('gray.800' /*'#39c5bb'*/, 'gray.100')}
     >
       <WithSubnavigation />
-      <Flex display={{ base: 'none', md: 'flex' }} justify={'center'}>
-        <Grid p={4} marginX={'3vh'}>
-          <VStack
-            divider={
-              <StackDivider borderColor={useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600')} />
-            }
-            spacing={4}
-            align="stretch"
+      {loaded ? (
+        <div>
+          <Flex display={{ base: 'none', md: 'flex' }} justify={'center'}>
+            <Grid p={4} marginX={'3vh'}>
+              <VStack
+                divider={<StackDivider borderColor={dividercolor} />}
+                spacing={4}
+                align="stretch"
+              >
+                {GamePostsData!.posts.map((viewItem) => (
+                  <ViewCard {...viewItem} />
+                ))}
+              </VStack>
+            </Grid>
+          </Flex>
+
+          <Flex
+            flex={{ base: 1, md: 'auto' }}
+            ml={{ base: 0 }}
+            display={{ base: 'flex', md: 'none' }}
+            justify={'center'}
           >
-            {VIEW_ITEMS.map((viewItem) => (
-              <ViewCard {...viewItem} />
-            ))}
-          </VStack>
-        </Grid>
-      </Flex>
-      <Flex
-        flex={{ base: 1, md: 'auto' }}
-        ml={{ base: 0 }}
-        display={{ base: 'flex', md: 'none' }}
-        justify={'center'}
-      >
-        <Grid p={1} marginX={'1'}>
-          <VStack
-            divider={
-              <StackDivider borderColor={useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600')} />
-            }
-            spacing={4}
-            align="stretch"
-          >
-            {VIEW_ITEMS.map((viewItem) => (
-              <MobileViewCard {...viewItem} />
-            ))}
-          </VStack>
-        </Grid>
-      </Flex>
+            <Grid p={1} marginX={'1'}>
+              <VStack
+                divider={<StackDivider borderColor={dividercolor} />}
+                spacing={4}
+                align="stretch"
+              >
+                {GamePostsData!.posts.map((viewItem) => (
+                  <MobileViewCard {...viewItem} />
+                ))}
+              </VStack>
+            </Grid>
+          </Flex>
+        </div>
+      ) : (
+        <div />
+      )}
     </Box>
   );
 };
 
-export interface ViewCardItem {
-  title?: string;
-  desc?: string;
-  from?: string;
-  details?: string;
-  isHidden?: boolean;
-}
-
-const ViewCard = ({ title, desc, from, details, isHidden }: ViewCardItem) => {
+const ViewCard = ({ title, body, playername }: PostItem) => {
   return (
     <Container
       maxW="container.xxl"
@@ -88,14 +103,14 @@ const ViewCard = ({ title, desc, from, details, isHidden }: ViewCardItem) => {
               {title}
             </Heading>
           </StatNumber>
-          {!isHidden && (
+          {1 && (
             <StatLabel mt={1} mb={1}>
-              投稿人:
+              投稿人: {playername}
             </StatLabel>
           )}
         </Stat>
         <Box my={2}>
-          {details?.split('\n').map((item) => {
+          {body?.split('\n').map((item) => {
             return (
               <Text fontSize="lg" align={'left'} lineHeight={1.6}>
                 {item}
@@ -108,7 +123,7 @@ const ViewCard = ({ title, desc, from, details, isHidden }: ViewCardItem) => {
   );
 };
 
-const MobileViewCard = ({ title, desc, from, details, isHidden }: ViewCardItem) => {
+const MobileViewCard = ({ title, body, playername }: PostItem) => {
   return (
     <Container
       maxW="container.xxl"
@@ -123,14 +138,14 @@ const MobileViewCard = ({ title, desc, from, details, isHidden }: ViewCardItem) 
             {title}
           </Heading>
         </StatNumber>
-        {!isHidden && (
+        {1 && (
           <StatLabel mt={1} mb={1}>
-            投稿人:
+            投稿人: {playername}
           </StatLabel>
         )}
       </Stat>
       <Box my={2}>
-        {details?.split('\n').map((item) => {
+        {body?.split('\n').map((item) => {
           return (
             <Text fontSize="sm" align={'left'} lineHeight={1.6}>
               {item}
