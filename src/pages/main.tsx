@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, Flex, Grid, useColorModeValue, useToast } from '@chakra-ui/react';
+import { Box, Flex, Grid, GridItem, useColorModeValue, useToast } from '@chakra-ui/react';
 
-import { Link } from 'react-router-dom';
-import ContributorsBlock from '../components/ContributorsBlock';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
+import GameDescCard from '../components/GameDescCard';
 import WithSubnavigation from '../components/header';
 import { useApi } from '../utils/apiClient';
 import { ViewAllGamesApiReturn } from '../utils/apiModels';
-import GameDescCard from '../components/GameDescCard';
 
 const MainView: React.FC = () => {
   const toast = useToast();
@@ -27,6 +26,16 @@ const MainView: React.FC = () => {
 
     return array;
   }
+  const [parent, enableAnimations] = useAutoAnimate({
+    duration: 350,
+    easing: 'ease-in-out',
+    disrespectUserMotionPreference: false,
+  });
+  const [parentMobile, enableAnimationsMobile] = useAutoAnimate({
+    duration: 350,
+    easing: 'ease-in-out',
+    disrespectUserMotionPreference: false,
+  });
   const { getViewAllGames } = useApi();
   const [AllGamesData, setAllGamesData] = useState<ViewAllGamesApiReturn>([]);
   const [loaded, setLoaded] = useState<boolean>();
@@ -36,14 +45,8 @@ const MainView: React.FC = () => {
       setAllGamesData(AllGamesResponse);
       setLoaded(true);
     }
-    fetch();
-  }, [getViewAllGames]);
-  useEffect(() => {
     toast({
-      // title: '敬请期待',
-      // description: '正在开工建设中',
-      // status: 'info',
-      duration: 2000,
+      duration: 1500,
       isClosable: false,
       render: () => (
         <Box color="white" rounded="lg" p={3} bg="#09958b">
@@ -53,7 +56,8 @@ const MainView: React.FC = () => {
         </Box>
       ),
     });
-  });
+    fetch();
+  }, [getViewAllGames]);
   return (
     <Box
       bg={useColorModeValue('gray.50' /*'#39c5bb'*/, 'gray.800')}
@@ -61,12 +65,18 @@ const MainView: React.FC = () => {
     >
       <WithSubnavigation />
       <Flex display={{ base: 'none', md: 'flex' }} justify={'center'}>
-        <Grid p={4} marginX={'3vh'}>
+        <Grid
+          p={4}
+          marginX={'10vh'}
+          templateColumns="repeat(4, 1fr)"
+          gap={6}
+          ref={parent as React.RefObject<HTMLDivElement>}
+        >
           {loaded ? (
             AllGamesData.map((gameitem) => (
-              <Link to="/view" state={{ gameid: gameitem.id }}>
-                <GameDescCard game={ gameitem } />
-              </Link>
+              <GridItem>
+                <GameDescCard game={gameitem} />
+              </GridItem>
             ))
           ) : (
             <div />
@@ -79,10 +89,16 @@ const MainView: React.FC = () => {
         display={{ base: 'flex', md: 'none' }}
         justify={'center'}
       >
-        <Grid p={1} marginX={'1'}>
-          <ContributorsBlock
-            citems={AllGamesData.map((a) => ({ cname: a.title, count: a.id, gameid: a.id }))}
-          />
+        <Grid p={2} marginX={'2vh'} gap={6} ref={parentMobile as React.RefObject<HTMLDivElement>}>
+          {loaded ? (
+            AllGamesData.map((gameitem) => (
+              <GridItem>
+                <GameDescCard game={gameitem} />
+              </GridItem>
+            ))
+          ) : (
+            <div />
+          )}
         </Grid>
       </Flex>
     </Box>

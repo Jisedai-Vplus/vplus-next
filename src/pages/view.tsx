@@ -15,6 +15,7 @@ import {
   VStack,
 } from '@chakra-ui/react';
 
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { useLocation } from 'react-router-dom';
 import WithSubnavigation from '../components/header';
 import { useApi } from '../utils/apiClient';
@@ -26,6 +27,16 @@ const ViewView: React.FC = () => {
   const [loaded, setLoaded] = useState<boolean>();
   const location = useLocation();
   const from = location.state as { gameid: number };
+  const [parent, enableAnimations] = useAutoAnimate({
+    duration: 200,
+    easing: 'linear',
+    disrespectUserMotionPreference: false,
+  });
+  const [parentMobile, enableAnimationsMobile] = useAutoAnimate({
+    duration: 200,
+    easing: 'linear',
+    disrespectUserMotionPreference: false,
+  });
   useEffect(() => {
     async function fetch() {
       let gameid = 0;
@@ -45,44 +56,41 @@ const ViewView: React.FC = () => {
       color={useColorModeValue('gray.800' /*'#39c5bb'*/, 'gray.100')}
     >
       <WithSubnavigation />
-      {loaded ? (
-        <div>
-          <Flex display={{ base: 'none', md: 'flex' }} justify={'center'}>
-            <Grid p={4} marginX={'3vh'}>
-              <VStack
-                divider={<StackDivider borderColor={dividercolor} />}
-                spacing={4}
-                align="stretch"
-              >
-                {GamePostsData!.posts.map((viewItem) => (
-                  <ViewCard {...viewItem} />
-                ))}
-              </VStack>
-            </Grid>
-          </Flex>
 
-          <Flex
-            flex={{ base: 1, md: 'auto' }}
-            ml={{ base: 0 }}
-            display={{ base: 'flex', md: 'none' }}
-            justify={'center'}
+      <Flex display={{ base: 'none', md: 'flex' }} justify={'center'}>
+        <Grid p={4} marginX={'3vh'}>
+          <VStack
+            divider={<StackDivider borderColor={dividercolor} />}
+            spacing={4}
+            align="stretch"
+            ref={parent as React.RefObject<HTMLDivElement>}
           >
-            <Grid p={1} marginX={'1'}>
-              <VStack
-                divider={<StackDivider borderColor={dividercolor} />}
-                spacing={4}
-                align="stretch"
-              >
-                {GamePostsData!.posts.map((viewItem) => (
-                  <MobileViewCard {...viewItem} />
-                ))}
-              </VStack>
-            </Grid>
-          </Flex>
-        </div>
-      ) : (
-        <div />
-      )}
+            {loaded ? GamePostsData!.posts.map((viewItem) => <ViewCard {...viewItem} />) : <div />}
+          </VStack>
+        </Grid>
+      </Flex>
+
+      <Flex
+        flex={{ base: 1, md: 'auto' }}
+        ml={{ base: 0 }}
+        display={{ base: 'flex', md: 'none' }}
+        justify={'center'}
+      >
+        <Grid p={1} marginX={'1'}>
+          <VStack
+            divider={<StackDivider borderColor={dividercolor} />}
+            spacing={4}
+            align="stretch"
+            ref={parentMobile as React.RefObject<HTMLDivElement>}
+          >
+            {loaded ? (
+              GamePostsData!.posts.map((viewItem) => <MobileViewCard {...viewItem} />)
+            ) : (
+              <div />
+            )}
+          </VStack>
+        </Grid>
+      </Flex>
     </Box>
   );
 };
