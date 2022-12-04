@@ -47,11 +47,11 @@ export function useApi(token?: string) {
     axios.interceptors.response.use(
       (res: any) => res,
       (err: any) => {
-        console.log(err.response.status);
-        err.code = err.response.data.code;
-        err.msg = err.response.data.msg;
-        alert(`操作失败: ${err.msg}`);
-        if (err.response?.status === 403 && err.msg === '未登录') {
+        console.log(err);
+        err.code = err.response.status;
+        err.msg = err.response.statusText;
+        alert(`操作失败: ${err.code} ${err.msg}`);
+        if (err.response?.status === 403) {
           localStorage.clear();
           window.location.href = '/auth/login';
         } else throw err;
