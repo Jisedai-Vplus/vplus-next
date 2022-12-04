@@ -1,3 +1,4 @@
+import { ArrowRightIcon, SpinnerIcon } from '@chakra-ui/icons';
 import {
   Avatar,
   Box,
@@ -11,35 +12,45 @@ import {
   Image,
   Text,
 } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 import { GameItem } from '../utils/apiModels';
 
-const GameDescCard = (props: {game: GameItem}) => {
-  const gameitem = props.game;
+const GameDescCard = (props: { game: GameItem }) => {
+  const gameItem = props.game;
+  const bannerUrl = process.env.REACT_APP_API_BASE! + '/view/gamebanner?gameid=' + gameItem.id;
   return (
-    <Card maxW="md">
+    <Card maxW="md" maxH="sm">
       <CardHeader>
         <Flex flex="4">
           <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-            <Avatar name="" src="" />
-
             <Box>
-              <Heading size="sm">Segun Adebayo</Heading>
+              <Heading size="md">{gameItem.title}</Heading>
               <Text></Text>
             </Box>
           </Flex>
-          <IconButton variant="ghost" colorScheme="gray" aria-label="See menu" />
+          <Link to="/view" state={{ gameid: gameItem.id }}>
+            <IconButton
+              variant="ghost"
+              colorScheme="gray"
+              aria-label="goto"
+              icon={<ArrowRightIcon />}
+            />
+          </Link>
         </Flex>
       </CardHeader>
       <CardBody>
-        <Text>
-          {gameitem.ext}
-        </Text>
+        <Text></Text>
       </CardBody>
+
       <Image
         objectFit="cover"
-        src=""
-        alt=""
+        align="50% 75%"
+        overflow="hidden"
+        boxSize="sm"
+        src={bannerUrl}
+        alt={gameItem.title}
+        fallback={<SpinnerIcon />}
       />
 
       <CardFooter
@@ -47,7 +58,7 @@ const GameDescCard = (props: {game: GameItem}) => {
         flexWrap="wrap"
         sx={{
           '& > button': {
-            minW: '136px',
+            minW: '40vh',
           },
         }}
       ></CardFooter>
