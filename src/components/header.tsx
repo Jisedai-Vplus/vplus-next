@@ -1,21 +1,21 @@
+import { ChevronDownIcon, ChevronRightIcon, CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
 import {
   Box,
-  Flex,
-  Text,
-  IconButton,
-  Stack,
   Collapse,
+  Flex,
   Icon,
+  IconButton,
   Link,
   Popover,
-  PopoverTrigger,
   PopoverContent,
-  useColorModeValue,
+  PopoverTrigger,
+  Stack,
+  Text,
   useBreakpointValue,
+  useColorModeValue,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon, ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
 
 export default function WithSubnavigation() {
@@ -24,7 +24,7 @@ export default function WithSubnavigation() {
   return (
     <Box>
       <Flex
-        bg={useColorModeValue('gray.200'/*'#39c5bb'*/, 'gray.700')}
+        bg={useColorModeValue('gray.200' /*'#39c5bb'*/, 'gray.700')}
         color={useColorModeValue('gray.600', 'white')}
         minH={'60px'}
         py={{ base: 2 }}
@@ -321,11 +321,13 @@ const NAV_ITEMS: Array<NavItem> = [
     href: '/contribute',
     isImplemented: false,
   },
+  /*
   {
     label: '观赏小作文',
     href: '/view',
     isImplemented: true,
   },
+  */
   {
     label: '其他',
     href: '/else',
