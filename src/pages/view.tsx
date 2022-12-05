@@ -12,7 +12,8 @@ import {
   StatLabel,
   StatNumber,
   Text,
-  VStack,
+  useToast,
+  VStack
 } from '@chakra-ui/react';
 
 import { useAutoAnimate } from '@formkit/auto-animate/react';
@@ -22,6 +23,7 @@ import { useApi } from '../utils/apiClient';
 import { PostItem, ViewGamePostsApiReturn } from '../utils/apiModels';
 
 const ViewView: React.FC = () => {
+  const toast = useToast();
   const { getViewGamePosts } = useApi();
   const [GamePostsData, setGamePostsData] = useState<ViewGamePostsApiReturn>();
   const [loaded, setLoaded] = useState<boolean>();
@@ -95,7 +97,7 @@ const ViewView: React.FC = () => {
   );
 };
 
-const ViewCard = ({ title, body, playername }: PostItem) => {
+const ViewCard = (props: PostItem) => {
   return (
     <Container
       maxW="container.xxl"
@@ -108,17 +110,22 @@ const ViewCard = ({ title, body, playername }: PostItem) => {
         <Stat>
           <StatNumber>
             <Heading my={3} fontSize="xl">
-              {title}
+              {props.title}
             </Heading>
           </StatNumber>
-          {1 && (
+          {props.producer && (
             <StatLabel mt={1} mb={1}>
-              投稿人: {playername}
+              P 主: {props.producer}
+            </StatLabel>
+          )}
+          {props.diva && (
+            <StatLabel mt={1} mb={1}>
+              演唱: {props.diva}
             </StatLabel>
           )}
         </Stat>
         <Box my={2}>
-          {body?.split('\n').map((item) => {
+          {props.body?.split('\n').map((item) => {
             return (
               <Text fontSize="lg" align={'left'} lineHeight={1.6}>
                 {item}
@@ -131,7 +138,7 @@ const ViewCard = ({ title, body, playername }: PostItem) => {
   );
 };
 
-const MobileViewCard = ({ title, body, playername }: PostItem) => {
+const MobileViewCard = (props: PostItem) => {
   return (
     <Container
       maxW="container.xxl"
@@ -143,17 +150,22 @@ const MobileViewCard = ({ title, body, playername }: PostItem) => {
       <Stat>
         <StatNumber>
           <Heading mt={3} fontSize="xl">
-            {title}
+            {props.title}
           </Heading>
         </StatNumber>
-        {1 && (
+        {props.producer && (
           <StatLabel mt={1} mb={1}>
-            投稿人: {playername}
+            P 主: {props.producer}
+          </StatLabel>
+        )}
+        {props.diva && (
+          <StatLabel mt={1} mb={1}>
+            演唱: {props.diva}
           </StatLabel>
         )}
       </Stat>
       <Box my={2}>
-        {body?.split('\n').map((item) => {
+        {props.body?.split('\n').map((item) => {
           return (
             <Text fontSize="sm" align={'left'} lineHeight={1.6}>
               {item}

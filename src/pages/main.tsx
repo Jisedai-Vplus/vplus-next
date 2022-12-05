@@ -89,7 +89,7 @@ const MainView: React.FC = () => {
         display={{ base: 'flex', md: 'none' }}
         justify={'center'}
       >
-        <Grid p={2} marginX={'2vh'} gap={6} ref={parentMobile as React.RefObject<HTMLDivElement>}>
+        <Grid p={2} marginX={'3vh'} marginY={6} gap={6} ref={parentMobile as React.RefObject<HTMLDivElement>}>
           {loaded ? (
             AllGamesData.map((gameitem) => (
               <GridItem>

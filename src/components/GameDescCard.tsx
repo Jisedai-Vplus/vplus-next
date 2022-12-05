@@ -11,6 +11,7 @@ import {
   IconButton,
   Image,
   Text,
+  Tooltip,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 
@@ -30,18 +31,21 @@ const GameDescCard = (props: { game: GameItem }) => {
             </Box>
           </Flex>
           <Link to="/view" state={{ gameid: gameItem.id }}>
-            <IconButton
-              variant="ghost"
-              colorScheme="gray"
-              aria-label="goto"
-              icon={<ArrowRightIcon />}
-            />
+            <Tooltip hasArrow label="前往观赏">
+              <IconButton
+                variant="ghost"
+                colorScheme="gray"
+                aria-label="goto"
+                icon={<ArrowRightIcon />}
+              />
+            </Tooltip>
           </Link>
         </Flex>
       </CardHeader>
-      <CardBody>
+      {/*
+        <CardBody>
         <Text></Text>
-      </CardBody>
+      </CardBody>*/}
 
       <Image
         objectFit="cover"
