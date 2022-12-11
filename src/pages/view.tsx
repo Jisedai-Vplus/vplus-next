@@ -3,17 +3,23 @@ import React, { useEffect, useState } from 'react';
 import { useColorModeValue } from '@chakra-ui/color-mode';
 import {
   Box,
+  Button,
+  Center,
   Container,
   Flex,
   Grid,
+  GridItem,
   Heading,
+  IconButton,
+  Spacer,
+  Stack,
   StackDivider,
   Stat,
   StatLabel,
   StatNumber,
   Text,
   useToast,
-  VStack
+  VStack,
 } from '@chakra-ui/react';
 
 import { useAutoAnimate } from '@formkit/auto-animate/react';
@@ -21,6 +27,7 @@ import { useLocation } from 'react-router-dom';
 import WithSubnavigation from '../components/header';
 import { useApi } from '../utils/apiClient';
 import { PostItem, ViewGamePostsApiReturn } from '../utils/apiModels';
+import TagInput from '../components/tagInput';
 
 const ViewView: React.FC = () => {
   const toast = useToast();
@@ -109,9 +116,35 @@ const ViewCard = (props: PostItem) => {
       <Container maxW="container.lg" fontSize="">
         <Stat>
           <StatNumber>
-            <Heading my={3} fontSize="xl">
-              {props.title}
-            </Heading>
+            {/*
+            <Flex minH={'60px'} borderBottom={1} alignItems={'center'}>
+              <Box flex={1} />
+              <Flex justify="center" align="center">
+                {props.title}
+              </Flex>
+              <Stack flex={1} display={'flex'} justify={'flex-end'} direction={'row'} spacing={6}>
+                <Button justifySelf={'flex-end'}></Button>
+              </Stack>
+            </Flex>
+            */}
+            <Grid
+              flex={{ base: 1, md: 0 }}
+              templateColumns="repeat(10, 1fr)"
+              gap={2}
+              justifyContent={'space-between'}
+              alignItems={'center'}
+            >
+              <GridItem colStart={4} colSpan={4}>
+                <Center>
+                  <Heading my={3} fontSize="xl" justifySelf={'center'} alignContent={'center'}>
+                    {props.title}
+                  </Heading>
+                </Center>
+              </GridItem>
+              <GridItem colSpan={3} justifySelf={'flex-end'}>
+                <TagInput />
+              </GridItem>
+            </Grid>
           </StatNumber>
           {props.producer && (
             <StatLabel mt={1} mb={1}>
