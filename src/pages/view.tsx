@@ -116,17 +116,24 @@ const ViewCard = (props: PostItem) => {
       <Container maxW="container.lg" fontSize="">
         <Stat>
           <StatNumber>
-            {/*
-            <Flex minH={'60px'} borderBottom={1} alignItems={'center'}>
+            <Flex marginY={'2'} alignItems={'center'}>
               <Box flex={1} />
-              <Flex justify="center" align="center">
+              <Text
+                justifySelf="center"
+                align="center"
+                maxWidth={'30vh'}
+                overflowWrap={'break-word'}
+                wordBreak={'keep-all'}
+              >
                 {props.title}
-              </Flex>
+              </Text>
               <Stack flex={1} display={'flex'} justify={'flex-end'} direction={'row'} spacing={6}>
-                <Button justifySelf={'flex-end'}></Button>
+                <Box justifySelf={'flex-end'} marginLeft={'5'}>
+                  <TagInput />
+                </Box>
               </Stack>
             </Flex>
-            */}
+            {/*
             <Grid
               flex={{ base: 1, md: 0 }}
               templateColumns="repeat(10, 1fr)"
@@ -145,6 +152,7 @@ const ViewCard = (props: PostItem) => {
                 <TagInput />
               </GridItem>
             </Grid>
+            */}
           </StatNumber>
           {props.producer && (
             <StatLabel mt={1} mb={1}>
