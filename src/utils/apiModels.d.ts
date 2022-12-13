@@ -249,3 +249,19 @@ export interface ViewGamePostsApiReturn {
   title: string;
   posts: Array<PostItem>;
 }
+
+// post Check Assumptions for One Game
+export interface GuessPostPlayerItem {
+  id: number;
+  playernames: Array<string>;
+}
+
+export interface GuessPostPlayerResultItem {
+  id: number;
+  result: string;
+}
+
+export interface GuessOneGamePlayersApiReturn {
+  gameid: number;
+  results: Array<GuessPostPlayerResultItem>;
+}
