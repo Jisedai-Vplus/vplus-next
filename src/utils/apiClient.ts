@@ -28,6 +28,7 @@ import {
   ViewGamePostsQuery,
   ViewGamePostsApiReturn,
   GuessOneGamePlayersApiReturn,
+  ContributeOnePostApiReturn,
 } from './apiModels';
 
 // Access vplusnext-backend api endpoints.
@@ -96,6 +97,12 @@ export function useApi(token?: string) {
     postGuessOneGamePlayers: useCallback(
       async (values: FormData): Promise<GuessOneGamePlayersApiReturn> =>
         (await axios.post<GuessOneGamePlayersApiReturn>('/guess/check', values)).data,
+      [axios]
+    ),
+
+    postContributeOnePost: useCallback(
+      async (values: FormData): Promise<ContributeOnePostApiReturn> =>
+        (await axios.post<ContributeOnePostApiReturn>('/contribute/contribute', values)).data,
       [axios]
     ),
 

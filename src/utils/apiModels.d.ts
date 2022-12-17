@@ -211,19 +211,19 @@ export interface TimelineApiReturn {
 
 // get View All Games
 export interface GameItem {
-    id: number;
-    created: string;
-    ext: string;
-    creatorid: number;
-    status: string;
-    title: string;
+  id: number;
+  created: string;
+  ext: string;
+  creatorid: number;
+  status: string;
+  title: string;
 }
 
 export interface ViewAllGamesQuery {
   mode?: string;
 }
 
-export interface ViewAllGamesApiReturn extends Array<GameItem>{}
+export interface ViewAllGamesApiReturn extends Array<GameItem> {}
 
 // get View Posts of Game
 export interface PostItem {
@@ -232,12 +232,12 @@ export interface PostItem {
   created: string;
   title: string;
   body: string;
-  diva: string; 
+  diva: string;
   producer: string;
   playerid: number;
   playername: string;
   url: string;
-} 
+}
 
 export interface ViewGamePostsQuery {
   gameid: number;
@@ -264,4 +264,9 @@ export interface GuessPostPlayerResultItem {
 export interface GuessOneGamePlayersApiReturn {
   gameid: number;
   results: Array<GuessPostPlayerResultItem>;
+}
+
+// post Contribute
+export interface ContributeOnePostApiReturn {
+  add: boolean;
 }
