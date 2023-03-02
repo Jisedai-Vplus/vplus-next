@@ -319,7 +319,7 @@ const NAV_ITEMS: Array<NavItem> = [
   {
     label: '投稿提交',
     href: '/contribute',
-    isImplemented: false,
+    isImplemented: true,
   },
   /*
   {

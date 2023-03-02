@@ -14,14 +14,14 @@ import {
   Tooltip,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
-
+import { MdEdit } from 'react-icons/md';
 import { GameItem } from '../utils/apiModels';
 
 const GameDescCard = (props: { game: GameItem }) => {
   const gameItem = props.game;
   const bannerUrl = process.env.REACT_APP_API_BASE! + '/view/gamebanner?gameid=' + gameItem.id;
   return (
-    <Card maxW="md" maxH="sm">
+    <Card p="3" borderWidth="1px" maxW="md" maxH="md">
       <CardHeader>
         <Flex flex="4">
           <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
@@ -30,12 +30,24 @@ const GameDescCard = (props: { game: GameItem }) => {
               <Text></Text>
             </Box>
           </Flex>
-          <Link to="/view" state={{ gameid: gameItem.id }}>
+          <Link to="/contribute" state={{ gameid: gameItem.id, gameItem: gameItem }}>
+            <Tooltip hasArrow label="投稿小作文">
+              <IconButton
+                variant="ghost"
+                colorScheme="gray"
+                aria-label="goto"
+                marginLeft={2}
+                icon={<MdEdit size={'22'} />}
+              />
+            </Tooltip>
+          </Link>
+          <Link to="/view" state={{ gameid: gameItem.id, gameItem: gameItem }}>
             <Tooltip hasArrow label="前往观赏">
               <IconButton
                 variant="ghost"
                 colorScheme="gray"
                 aria-label="goto"
+                marginLeft={2}
                 icon={<ArrowRightIcon />}
               />
             </Tooltip>
@@ -51,6 +63,8 @@ const GameDescCard = (props: { game: GameItem }) => {
         objectFit="cover"
         align="50% 75%"
         overflow="hidden"
+        borderRadius={4}
+        marginX={0}
         boxSize="sm"
         src={bannerUrl}
         alt={gameItem.title}
