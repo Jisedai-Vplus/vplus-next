@@ -6,7 +6,8 @@ export interface LoginValues {
 
 export interface LoginApiReturn {
   code: number;
-  msg?: string;
+  login: bool;
+  msg: string;
   data?: object;
 }
 
