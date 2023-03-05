@@ -1,6 +1,7 @@
 import { Box, ChakraProvider, Grid, theme } from '@chakra-ui/react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import ContributeView from './pages/contribute';
+import LoginView from './pages/login';
 import MainView from './pages/main';
 import RegisterView from './pages/register';
 import ViewView from './pages/view';
@@ -21,6 +22,9 @@ export const App = () => (
           </Routes>
           <Routes>
             <Route path="/register" element={<RegisterView />}></Route>
+          </Routes>
+          <Routes>
+            <Route path="/login" element={<LoginView />}></Route>
           </Routes>
         </BrowserRouter>
       </Grid>
