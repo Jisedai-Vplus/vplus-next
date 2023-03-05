@@ -52,11 +52,14 @@ export function useApi(token?: string) {
         console.log(err);
         err.code = err.response.status;
         err.msg = err.response.statusText;
-        alert(`操作失败: ${err.code} ${err.msg}`);
+        // alert(`操作失败: ${err.code} ${err.msg}`);
         if (err.response?.status === 403) {
-          localStorage.clear();
+          // localStorage.clear();
           window.location.href = '/auth/login';
-        } else throw err;
+        }
+        // else throw err;
+        // return Promise.reject(err);
+        return err.response;
       }
     );
 
@@ -108,17 +111,17 @@ export function useApi(token?: string) {
 
     postLogin: useCallback(
       async (values: FormData): Promise<LoginApiReturn> =>
-        (await axios.post<LoginApiReturn>('/account/login/', values)).data,
+        (await axios.post<LoginApiReturn>('/auth/login', values)).data,
       [axios]
     ),
     postRegister: useCallback(
       async (values: FormData): Promise<RegisterApiReturn> =>
-        (await axios.post<RegisterApiReturn>('/account/register/', values)).data,
+        (await axios.post<RegisterApiReturn>('/auth/register', values)).data,
       [axios]
     ),
     postSendPin: useCallback(
       async (values: FormData): Promise<PinApiReturn> =>
-        (await axios.post<PinApiReturn>('/account/send_pin/', values)).data,
+        (await axios.post<PinApiReturn>('/auth/send_pin', values)).data,
       [axios]
     ),
     postChangePassword: useCallback(

@@ -1,6 +1,6 @@
 // post Login
 export interface LoginValues {
-  username: string;
+  email: string;
   password: string;
 }
 
@@ -12,9 +12,7 @@ export interface LoginApiReturn {
 
 // post Register
 export interface RegisterValues {
-  username: string;
   password: string;
-  confirmPassword: string;
   email: string;
   pin: string;
 }
@@ -25,6 +23,7 @@ export interface PinValues {
 
 export interface RegisterApiReturn {
   code: number;
+  register: bool;
   msg: string;
 }
 
