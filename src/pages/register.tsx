@@ -17,6 +17,9 @@ import {
   GridItem,
   Heading,
   Input,
+  List,
+  ListIcon,
+  ListItem,
   Stack,
   StackDivider,
   Stat,
@@ -28,12 +31,22 @@ import {
 } from '@chakra-ui/react';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 
+import {
+  MdAdd,
+  MdCached,
+  MdCheckCircle,
+  MdEdit,
+  MdFileDownload,
+  MdList,
+  MdSettings,
+  MdVisibility,
+} from 'react-icons/md';
 import WithSubnavigation from '../components/header';
 import TagInput from '../components/tagInput';
 import { useApi } from '../utils/apiClient';
 import {
-  GuessPostPlayerItem,
-  GuessPostPlayerResultItem,
+  RegisterApiReturn,
+  RegisterValues,
   PostItem,
   ViewAllGamesApiReturn,
 } from '../utils/apiModels';
@@ -41,23 +54,18 @@ import {
 const RegisterView: React.FC = () => {
   const toast = useToast();
 
-  const { postContributeOnePost, getViewAllGames } = useApi();
+  const { postRegister, postSendPin } = useApi();
   const {
     handleSubmit,
     register,
     getValues,
     watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({ mode: 'onSubmit', reValidateMode: 'onSubmit' });
 
-  const [AllGamesData, setAllGamesData] = useState<ViewAllGamesApiReturn>([]);
   const [loaded, setLoaded] = useState<boolean>();
 
   const location = useLocation();
-  const from = location.state as { gameid: number; gameItem: any };
-
-  const [gameItem, setGameItem] = useState<any>({});
-  const [postVisibility, setPostVisibility] = React.useState('private');
 
   const [parent, enableAnimations] = useAutoAnimate({
     duration: 200,
@@ -72,25 +80,22 @@ const RegisterView: React.FC = () => {
 
   const dividercolor = useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600');
 
-  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
   const onSubmit = async (postData: any) => {
-    postData.visibility = postVisibility;
-    console.log(postData);
     let data = new FormData();
-    data.append('gameid', JSON.stringify(gameItem.id));
-    data.append('post', JSON.stringify(postData));
-    const ContributeOnePostResponse = await postContributeOnePost(data);
-    if (ContributeOnePostResponse.add) {
+    data.append('email', postData.email);
+    data.append('password', postData.password);
+    const RegisterResponse = await postRegister(data);
+    if (RegisterResponse.register) {
       toast({
         duration: 1500,
-        title: '投放成功',
+        title: '注册成功',
         status: 'success',
       });
     } else {
       toast({
         duration: 1500,
-        title: '投放失败',
+        title: '注册失败',
+        description: RegisterResponse.msg,
         status: 'error',
       });
     }
@@ -172,7 +177,13 @@ const RegisterView: React.FC = () => {
                         {...register('confirm_password', {
                           required: true,
                           validate: (val: string) => {
-                            if (watch('password') !== val) {
+                            const { password } = getValues();
+                            if (password !== val) {
+                              toast({
+                                duration: 1500,
+                                title: '密码与确认密码不匹配',
+                                status: 'error',
+                              });
                               return 'Your passwords do no match';
                             }
                           },
@@ -180,8 +191,55 @@ const RegisterView: React.FC = () => {
                       />
                     </FormControl>
                     <Button type="submit" onClick={handleSubmit(onSubmit)}>
-                      神奇按钮
+                      注册
                     </Button>
+                    <Box>
+                      <Text fontSize="md" align={'left'}>
+                        不经注册你可以：
+                      </Text>
+                      <List fontSize="md" textAlign={'left'}>
+                        <ListItem>
+                          <ListIcon as={MdVisibility} />
+                          查看投稿
+                        </ListItem>
+                        <ListItem>
+                          <ListIcon as={MdEdit} />
+                          撰写投稿
+                        </ListItem>
+                        <ListItem>
+                          <ListIcon as={MdCached} />
+                          无痛暂存猜测结果（是的，可以）
+                        </ListItem>
+                        <ListItem>
+                          <ListIcon as={MdCheckCircle} />
+                          验证往期投稿的猜测结果
+                        </ListItem>
+                      </List>
+                    </Box>
+                    <Box>
+                      <Text fontSize="md" align={'left'}>
+                        注册后你可以：
+                      </Text>
+                      <List fontSize="md" textAlign={'left'}>
+                        <ListItem>
+                          <ListIcon as={MdAdd} />
+                          发起一期游戏（未实装）
+                        </ListItem>
+                        <ListItem>
+                          <ListIcon as={MdFileDownload} />
+                          下载投稿及数据（未实装）
+                        </ListItem>
+                        <ListItem>
+                          <ListIcon as={MdList} />
+                          查看其它注册用户的公开投稿（未实装）
+                        </ListItem>
+                        {/* You can also use custom icons from react-icons */}
+                        <ListItem>
+                          <ListIcon as={MdSettings} />
+                          设置个人小传（未实装）
+                        </ListItem>
+                      </List>
+                    </Box>
                   </VStack>
                 </Box>
               </motion.div>
@@ -211,134 +269,134 @@ const RegisterView: React.FC = () => {
   );
 };
 
-const ViewCard = (props: {
-  item: PostItem;
-  oneResult: GuessPostPlayerResultItem;
-  checkCounts: number;
-  onSet: (e: GuessPostPlayerItem) => void;
-}) => {
-  const handleSet = (e: Array<string>) => {
-    props.onSet({
-      id: props.item.id,
-      playernames: e,
-    });
-  };
-  return (
-    <Container
-      maxW="container.xxl"
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-      borderColor={useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600')}
-    >
-      <Container maxW="container.lg" fontSize="">
-        <Stat>
-          <StatNumber>
-            <Flex marginY={'2'} alignItems={'center'}>
-              <Box flex={1} />
-              <Text
-                justifySelf="center"
-                align="center"
-                maxWidth={'30vh'}
-                overflowWrap={'break-word'}
-                wordBreak={'keep-all'}
-              >
-                {props.item.title}
-              </Text>
-              <Stack flex={1} display={'flex'} justify={'flex-end'} direction={'row'} spacing={6}>
-                <Box justifySelf={'flex-end'} marginLeft={'5'}>
-                  <TagInput
-                    postId={props.item.id}
-                    onSet={handleSet}
-                    oneResult={props.oneResult.result}
-                    checkCounts={props.checkCounts}
-                  />
-                </Box>
-              </Stack>
-            </Flex>
-            {/*
-            <Grid
-              flex={{ base: 1, md: 0 }}
-              templateColumns="repeat(10, 1fr)"
-              gap={2}
-              justifyContent={'space-between'}
-              alignItems={'center'}
-            >
-              <GridItem colStart={4} colSpan={4}>
-                <Center>
-                  <Heading my={3} fontSize="xl" justifySelf={'center'} alignContent={'center'}>
-                    {props.title}
-                  </Heading>
-                </Center>
-              </GridItem>
-              <GridItem colSpan={3} justifySelf={'flex-end'}>
-                <TagInput />
-              </GridItem>
-            </Grid>
-            */}
-          </StatNumber>
-          {props.item.producer && (
-            <StatLabel mt={1} mb={1}>
-              P 主: {props.item.producer}
-            </StatLabel>
-          )}
-          {props.item.diva && (
-            <StatLabel mt={1} mb={1}>
-              演唱: {props.item.diva}
-            </StatLabel>
-          )}
-        </Stat>
-        <Box my={2}>
-          {props.item.body?.split('\n').map((item, index) => {
-            return (
-              <Text fontSize="lg" align={'left'} lineHeight={1.6} key={index}>
-                {item}
-              </Text>
-            );
-          })}
-        </Box>
-      </Container>
-    </Container>
-  );
-};
+// const ViewCard = (props: {
+//   item: PostItem;
+//   oneResult: GuessPostPlayerResultItem;
+//   checkCounts: number;
+//   onSet: (e: GuessPostPlayerItem) => void;
+// }) => {
+//   const handleSet = (e: Array<string>) => {
+//     props.onSet({
+//       id: props.item.id,
+//       playernames: e,
+//     });
+//   };
+//   return (
+//     <Container
+//       maxW="container.xxl"
+//       borderWidth="1px"
+//       borderRadius="lg"
+//       overflow="hidden"
+//       borderColor={useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600')}
+//     >
+//       <Container maxW="container.lg" fontSize="">
+//         <Stat>
+//           <StatNumber>
+//             <Flex marginY={'2'} alignItems={'center'}>
+//               <Box flex={1} />
+//               <Text
+//                 justifySelf="center"
+//                 align="center"
+//                 maxWidth={'30vh'}
+//                 overflowWrap={'break-word'}
+//                 wordBreak={'keep-all'}
+//               >
+//                 {props.item.title}
+//               </Text>
+//               <Stack flex={1} display={'flex'} justify={'flex-end'} direction={'row'} spacing={6}>
+//                 <Box justifySelf={'flex-end'} marginLeft={'5'}>
+//                   <TagInput
+//                     postId={props.item.id}
+//                     onSet={handleSet}
+//                     oneResult={props.oneResult.result}
+//                     checkCounts={props.checkCounts}
+//                   />
+//                 </Box>
+//               </Stack>
+//             </Flex>
+//             {/*
+//             <Grid
+//               flex={{ base: 1, md: 0 }}
+//               templateColumns="repeat(10, 1fr)"
+//               gap={2}
+//               justifyContent={'space-between'}
+//               alignItems={'center'}
+//             >
+//               <GridItem colStart={4} colSpan={4}>
+//                 <Center>
+//                   <Heading my={3} fontSize="xl" justifySelf={'center'} alignContent={'center'}>
+//                     {props.title}
+//                   </Heading>
+//                 </Center>
+//               </GridItem>
+//               <GridItem colSpan={3} justifySelf={'flex-end'}>
+//                 <TagInput />
+//               </GridItem>
+//             </Grid>
+//             */}
+//           </StatNumber>
+//           {props.item.producer && (
+//             <StatLabel mt={1} mb={1}>
+//               P 主: {props.item.producer}
+//             </StatLabel>
+//           )}
+//           {props.item.diva && (
+//             <StatLabel mt={1} mb={1}>
+//               演唱: {props.item.diva}
+//             </StatLabel>
+//           )}
+//         </Stat>
+//         <Box my={2}>
+//           {props.item.body?.split('\n').map((item, index) => {
+//             return (
+//               <Text fontSize="lg" align={'left'} lineHeight={1.6} key={index}>
+//                 {item}
+//               </Text>
+//             );
+//           })}
+//         </Box>
+//       </Container>
+//     </Container>
+//   );
+// };
 
-const MobileViewCard = (props: PostItem) => {
-  return (
-    <Container
-      maxW="container.xxl"
-      borderWidth="1px"
-      borderRadius="lg"
-      overflow="hidden"
-      borderColor={useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600')}
-    >
-      <Stat>
-        <StatNumber>
-          <Heading mt={3} fontSize="xl">
-            {props.title}
-          </Heading>
-        </StatNumber>
-        {props.producer && (
-          <StatLabel mt={1} mb={1}>
-            P 主: {props.producer}
-          </StatLabel>
-        )}
-        {props.diva && (
-          <StatLabel mt={1} mb={1}>
-            演唱: {props.diva}
-          </StatLabel>
-        )}
-      </Stat>
-      <Box my={2}>
-        {props.body?.split('\n').map((item, index) => {
-          return (
-            <Text fontSize="sm" align={'left'} lineHeight={1.6} key={index}>
-              {item}
-            </Text>
-          );
-        })}
-      </Box>
-    </Container>
-  );
-};
+// const MobileViewCard = (props: PostItem) => {
+//   return (
+//     <Container
+//       maxW="container.xxl"
+//       borderWidth="1px"
+//       borderRadius="lg"
+//       overflow="hidden"
+//       borderColor={useColorModeValue('gray.300' /*'#39c5bb'*/, 'gray.600')}
+//     >
+//       <Stat>
+//         <StatNumber>
+//           <Heading mt={3} fontSize="xl">
+//             {props.title}
+//           </Heading>
+//         </StatNumber>
+//         {props.producer && (
+//           <StatLabel mt={1} mb={1}>
+//             P 主: {props.producer}
+//           </StatLabel>
+//         )}
+//         {props.diva && (
+//           <StatLabel mt={1} mb={1}>
+//             演唱: {props.diva}
+//           </StatLabel>
+//         )}
+//       </Stat>
+//       <Box my={2}>
+//         {props.body?.split('\n').map((item, index) => {
+//           return (
+//             <Text fontSize="sm" align={'left'} lineHeight={1.6} key={index}>
+//               {item}
+//             </Text>
+//           );
+//         })}
+//       </Box>
+//     </Container>
+//   );
+// };
 
 export default RegisterView;
