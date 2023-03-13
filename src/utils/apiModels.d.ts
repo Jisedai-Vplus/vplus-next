@@ -1,20 +1,19 @@
 // post Login
 export interface LoginValues {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface LoginApiReturn {
   code: number;
-  msg?: string;
+  login: bool;
+  msg: string;
   data?: object;
 }
 
 // post Register
 export interface RegisterValues {
-  username: string;
   password: string;
-  confirmPassword: string;
   email: string;
   pin: string;
 }
@@ -25,6 +24,7 @@ export interface PinValues {
 
 export interface RegisterApiReturn {
   code: number;
+  register: bool;
   msg: string;
 }
 
@@ -41,7 +41,7 @@ export interface ChangePasswordApiReturn {
 
 // post Logout
 export interface LogoutApiReturn {
-  code: number;
+  logout: boolean;
 }
 
 // get User
@@ -53,11 +53,10 @@ export interface UserModel {
 
 export interface UserApiReturn {
   code: number;
-  data: {
-    username: string;
-    uid: number;
-    email: string;
-  };
+  username?: string;
+  id?: number;
+  email?: string;
+  msg?: string;
 }
 
 // get SearchSubscribe
@@ -207,4 +206,66 @@ export interface TimelineApiReturn {
     offset: number;
     data: Array<any>;
   };
+}
+
+// get View All Games
+export interface GameItem {
+  id: number;
+  created: string;
+  ext: string;
+  creatorid: number;
+  status: string;
+  title: string;
+}
+
+export interface ViewAllGamesQuery {
+  mode?: string;
+}
+
+export interface ViewAllGamesApiReturn extends Array<GameItem> {}
+
+// get View Posts of Game
+export interface PostItem {
+  id: number;
+  gameid: number;
+  created: string;
+  title: string;
+  body: string;
+  diva: string;
+  producer: string;
+  playerid: number;
+  playername: string;
+  url: string;
+}
+
+export interface ViewGamePostsQuery {
+  gameid: number;
+  mode?: string;
+}
+
+export interface ViewGamePostsApiReturn {
+  gameid: number;
+  title: string;
+  posts: Array<PostItem>;
+}
+
+// post Check Assumptions for One Game
+export interface GuessPostPlayerItem {
+  id: number;
+  playernames: Array<string>;
+}
+
+export interface GuessPostPlayerResultItem {
+  id: number;
+  result: string;
+}
+
+export interface GuessOneGamePlayersApiReturn {
+  gameid: number;
+  results: Array<GuessPostPlayerResultItem>;
+}
+
+// post Contribute
+export interface ContributeOnePostApiReturn {
+  add: boolean;
 }

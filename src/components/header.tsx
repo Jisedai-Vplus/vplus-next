@@ -1,30 +1,52 @@
+import { ChevronDownIcon, ChevronRightIcon, CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { BsPersonCheck } from "react-icons/bs";
 import {
+  Avatar,
   Box,
-  Flex,
-  Text,
-  IconButton,
-  Stack,
   Collapse,
+  Flex,
   Icon,
+  IconButton,
   Link,
   Popover,
-  PopoverTrigger,
   PopoverContent,
-  useColorModeValue,
+  PopoverTrigger,
+  Stack,
+  Text,
   useBreakpointValue,
+  useColorModeValue,
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon, ChevronDownIcon, ChevronRightIcon } from '@chakra-ui/icons';
+import { useEffect, useState } from 'react';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
+import { useApi } from '../utils/apiClient';
 
 export default function WithSubnavigation() {
-  const { isOpen, onToggle } = useDisclosure();
+  const menu = useDisclosure();
+  const authMenu = useDisclosure();
+  const [userInfoData, setUserInfoData] = useState<any>([]);
+  const [auth, setAuth] = useState<boolean>(false);
+  const [loaded, setLoaded] = useState<boolean>(false);
+  const { getUserInfo } = useApi();
+  const toast = useToast();
+
+  useEffect(() => {
+    async function fetch() {
+      const UserInfoResponse = await getUserInfo();
+      if (UserInfoResponse.id) {
+        setAuth(true);
+        setUserInfoData(UserInfoResponse);
+      }
+      setLoaded(true);
+    }
+    fetch();
+  }, [getUserInfo]);
 
   return (
     <Box>
       <Flex
-        bg={useColorModeValue('gray.200'/*'#39c5bb'*/, 'gray.700')}
+        bg={useColorModeValue('gray.200' /*'#39c5bb'*/, 'gray.700')}
         color={useColorModeValue('gray.600', 'white')}
         minH={'60px'}
         py={{ base: 2 }}
@@ -40,15 +62,20 @@ export default function WithSubnavigation() {
           display={{ base: 'flex', md: 'none' }}
         >
           <IconButton
-            onClick={onToggle}
-            icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
+            onClick={menu.onToggle}
+            icon={menu.isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
             variant={'ghost'}
             aria-label={'Toggle Navigation'}
           />
         </Flex>
-        <Flex flex={{ base: 1, md: 'auto' }} justify={{ base: 'center', md: 'start' }}>
+        <Flex
+          flex={{ base: 1, md: 'auto' }}
+          justify={{ base: 'center', md: 'start' }}
+          alignContent={'center'}
+        >
           <Text
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+            alignSelf={'center'}
+            textAlign={useBreakpointValue({ base: 'center', md: 'center' })}
             fontFamily={'heading'}
             color={useColorModeValue('gray.800', 'white')}
           >
@@ -56,36 +83,163 @@ export default function WithSubnavigation() {
           </Text>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
+            <DesktopNav navItems={NAV_ITEMS} />
           </Flex>
         </Flex>
-
-        <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
+        <Flex display={{ base: 'none', md: 'flex' }} justify={'flex-end'}>
+          {loaded ? (
+            auth ? (
+              <Link
+                href={'/mecontrol'}
+                display={'flex'}
+                alignContent={'center'}
+                justifyContent={'center'}
+              >
+                <Avatar size="sm" variant={'ghost'} />
+              </Link>
+            ) : (
+              <DesktopNav navItems={NAV_ITEMS_AUTH} />
+            )
+          ) : (
+            <div />
+          )}
+        </Flex>
+        <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={2}>
+          <Flex
+            flex={{ base: 1, md: 'auto' }}
+            ml={{ base: -2 }}
+            display={{ base: 'flex', md: 'none' }}
+            justify={'flex-end'}
+            alignContent={'center'}
+          >
+            {loaded ? (
+              auth ? (
+                <Link href={'/mecontrol'} display={'flex'} alignContent={'center'}>
+                  <Avatar size="sm" variant={'ghost'} alignSelf={'center'} />
+                </Link>
+              ) : (
+                <IconButton
+                  onClick={authMenu.onToggle}
+                  icon={authMenu.isOpen ? <CloseIcon w={3} h={3} /> : <Icon as={BsPersonCheck} w={5} h={5} />}
+                  variant={'ghost'}
+                  aria-label={'Toggle Auth'}
+                />
+              )
+            ) : (
+              <div />
+            )}
+          </Flex>
           <ColorModeSwitcher justifySelf={'flex-end'} />
         </Stack>
       </Flex>
 
-      <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+      <Collapse in={menu.isOpen} animateOpacity>
+        <MobileNav navItems={NAV_ITEMS} />
+      </Collapse>
+      <Collapse in={authMenu.isOpen} animateOpacity>
+        <MobileNav navItems={NAV_ITEMS_AUTH} />
       </Collapse>
     </Box>
   );
 }
 
-const DesktopNav = () => {
+interface NavItem {
+  label: string;
+  subLabel?: string;
+  children?: Array<NavItem>;
+  href?: string;
+  isImplemented?: boolean;
+}
+
+const NAV_ITEMS: Array<NavItem> = [
+  /*
+  {
+    label: 'Inspiration',
+    children: [
+      {
+        label: 'Explore Design Work',
+        subLabel: 'Trending Design to inspire you',
+        href: '#',
+      },
+      {
+        label: 'New & Noteworthy',
+        subLabel: 'Up-and-coming Designers',
+        href: '#',
+      },
+    ],
+  },
+  */
+  {
+    label: '主页',
+    href: '/',
+    isImplemented: true,
+  },
+  {
+    label: '投稿提交',
+    href: '/contribute',
+    isImplemented: true,
+  },
+  /*
+  {
+    label: '观赏小作文',
+    href: '/view',
+    isImplemented: true,
+  },
+  */
+  {
+    label: '其他',
+    href: '/else',
+    isImplemented: false,
+  },
+];
+
+const NAV_ITEMS_AUTH: Array<NavItem> = [
+  /*
+  {
+    label: 'Inspiration',
+    children: [
+      {
+        label: 'Explore Design Work',
+        subLabel: 'Trending Design to inspire you',
+        href: '#',
+      },
+      {
+        label: 'New & Noteworthy',
+        subLabel: 'Up-and-coming Designers',
+        href: '#',
+      },
+    ],
+  },
+  */
+  {
+    label: '登录',
+    href: '/login',
+    isImplemented: true,
+  },
+  {
+    label: '注册',
+    href: '/register',
+    isImplemented: true,
+  },
+];
+
+const DesktopNav = (props: { navItems: Array<NavItem> }) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
   const toast = useToast();
   return (
     <Stack direction={'row'} spacing={4}>
-      {NAV_ITEMS.map((navItem) => (
+      {props.navItems.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
             <PopoverTrigger>
               {navItem.isImplemented ? (
                 <Link
                   p={2}
+                  display={'flex'}
+                  alignContent={'center'}
+                  justifyContent={'center'}
                   href={navItem.href ?? ''}
                   fontSize={'sm'}
                   fontWeight={500}
@@ -101,6 +255,9 @@ const DesktopNav = () => {
                 <Link
                   p={2}
                   fontSize={'sm'}
+                  display={'flex'}
+                  alignContent={'center'}
+                  justifyContent={'center'}
                   fontWeight={500}
                   color={linkColor}
                   _hover={{
@@ -183,10 +340,10 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav = (props: { navItems: Array<NavItem> }) => {
   return (
     <Stack bg={useColorModeValue('white', 'gray.800')} p={4} display={{ md: 'none' }}>
-      {NAV_ITEMS.map((navItem) => (
+      {props.navItems.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
     </Stack>
@@ -202,7 +359,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
     <Stack spacing={4} onClick={children && onToggle}>
       {isImplemented ? (
         <Flex
-          py={2}
+          py={1}
           as={Link}
           href={href ?? '#'}
           justify={'space-between'}
@@ -211,7 +368,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
             textDecoration: 'none',
           }}
         >
-          <Text fontWeight={600} color={linkColor}>
+          <Text fontWeight={400} color={linkColor} fontSize={'md'}>
             {label}
           </Text>
           {children && (
@@ -226,7 +383,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
         </Flex>
       ) : (
         <Flex
-          py={2}
+          py={1}
           as={Link}
           justify={'space-between'}
           align={'center'}
@@ -249,7 +406,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
             })
           }
         >
-          <Text fontWeight={600} color={linkColor}>
+          <Text fontWeight={400} color={linkColor} fontSize={'md'}>
             {label}
           </Text>
           {children && (
@@ -284,51 +441,3 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
     </Stack>
   );
 };
-
-interface NavItem {
-  label: string;
-  subLabel?: string;
-  children?: Array<NavItem>;
-  href?: string;
-  isImplemented?: boolean;
-}
-
-const NAV_ITEMS: Array<NavItem> = [
-  /*
-  {
-    label: 'Inspiration',
-    children: [
-      {
-        label: 'Explore Design Work',
-        subLabel: 'Trending Design to inspire you',
-        href: '#',
-      },
-      {
-        label: 'New & Noteworthy',
-        subLabel: 'Up-and-coming Designers',
-        href: '#',
-      },
-    ],
-  },
-  */
-  {
-    label: '主页',
-    href: '/',
-    isImplemented: true,
-  },
-  {
-    label: '投稿提交',
-    href: '/contribute',
-    isImplemented: false,
-  },
-  {
-    label: '观赏小作文',
-    href: '/view',
-    isImplemented: true,
-  },
-  {
-    label: '其他',
-    href: '/else',
-    isImplemented: false,
-  },
-];

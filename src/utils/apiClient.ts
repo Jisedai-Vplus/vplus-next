@@ -23,15 +23,19 @@ import {
   TimelineApiReturn,
   TimelineQueryModel,
   UserApiReturn,
+  ViewAllGamesApiReturn,
+  ViewAllGamesQuery,
+  ViewGamePostsQuery,
+  ViewGamePostsApiReturn,
+  GuessOneGamePlayersApiReturn,
+  ContributeOnePostApiReturn,
 } from './apiModels';
-import {} from './apiModels.d';
 
-// Access ddhelper api endpoints.
+// Access vplusnext-backend api endpoints.
 export function useApi(token?: string) {
   const axios = useMemo(() => {
     const axios = Axios.create({
-      // baseURL: process.env.REACT_APP_API_BASE,
-      baseURL: '/api',
+      baseURL: process.env.REACT_APP_API_BASE,
     });
 
     axios.interceptors.request.use((req: any) => {
@@ -45,14 +49,17 @@ export function useApi(token?: string) {
     axios.interceptors.response.use(
       (res: any) => res,
       (err: any) => {
-        console.log(err.response.status);
-        err.code = err.response.data.code;
-        err.msg = err.response.data.msg;
-        alert(`操作失败: ${err.msg}`);
-        if (err.response?.status === 403 && err.msg === '未登录') {
-          localStorage.clear();
+        console.log(err);
+        err.code = err.response.status;
+        err.msg = err.response.statusText;
+        // alert(`操作失败: ${err.code} ${err.msg}`);
+        if (err.response?.status === 403) {
+          // localStorage.clear();
           window.location.href = '/auth/login';
-        } else throw err;
+        }
+        // else throw err;
+        // return Promise.reject(err);
+        return err.response;
       }
     );
 
@@ -60,19 +67,61 @@ export function useApi(token?: string) {
   }, [token]);
 
   return {
+    getViewAllGames: useCallback(
+      async (qvalues: ViewAllGamesQuery, token?: string): Promise<ViewAllGamesApiReturn> =>
+        (
+          await axios.get<ViewAllGamesApiReturn>(
+            '/view/allgames',
+            token
+              ? {
+                  headers: { authorization: `Bearer ${token}` },
+                  params: qvalues,
+                }
+              : { params: qvalues }
+          )
+        ).data,
+      [axios]
+    ),
+    getViewGamePosts: useCallback(
+      async (qvalues: ViewGamePostsQuery, token?: string): Promise<ViewGamePostsApiReturn> =>
+        (
+          await axios.get<ViewGamePostsApiReturn>(
+            '/view/game',
+            token
+              ? {
+                  headers: { authorization: `Bearer ${token}` },
+                  params: qvalues,
+                }
+              : { params: qvalues }
+          )
+        ).data,
+      [axios]
+    ),
+    postGuessOneGamePlayers: useCallback(
+      async (values: FormData): Promise<GuessOneGamePlayersApiReturn> =>
+        (await axios.post<GuessOneGamePlayersApiReturn>('/guess/check', values)).data,
+      [axios]
+    ),
+
+    postContributeOnePost: useCallback(
+      async (values: FormData): Promise<ContributeOnePostApiReturn> =>
+        (await axios.post<ContributeOnePostApiReturn>('/contribute/contribute', values)).data,
+      [axios]
+    ),
+
     postLogin: useCallback(
       async (values: FormData): Promise<LoginApiReturn> =>
-        (await axios.post<LoginApiReturn>('/account/login/', values)).data,
+        (await axios.post<LoginApiReturn>('/auth/login', values)).data,
       [axios]
     ),
     postRegister: useCallback(
       async (values: FormData): Promise<RegisterApiReturn> =>
-        (await axios.post<RegisterApiReturn>('/account/register/', values)).data,
+        (await axios.post<RegisterApiReturn>('/auth/register', values)).data,
       [axios]
     ),
     postSendPin: useCallback(
       async (values: FormData): Promise<PinApiReturn> =>
-        (await axios.post<PinApiReturn>('/account/send_pin/', values)).data,
+        (await axios.post<PinApiReturn>('/auth/send_pin', values)).data,
       [axios]
     ),
     postChangePassword: useCallback(
@@ -82,14 +131,14 @@ export function useApi(token?: string) {
     ),
     postLogout: useCallback(
       async (): Promise<LogoutApiReturn> =>
-        (await axios.post<LogoutApiReturn>('account/logout/')).data,
+        (await axios.post<LogoutApiReturn>('/auth/logout')).data,
       [axios]
     ),
     getUserInfo: useCallback(
       async (token?: string): Promise<UserApiReturn> =>
         (
           await axios.get<UserApiReturn>(
-            '/account/user_info',
+            '/auth/me',
             token
               ? {
                   headers: { authorization: `Bearer ${token}` },
