@@ -1,5 +1,7 @@
 import { ChevronDownIcon, ChevronRightIcon, CloseIcon, HamburgerIcon } from '@chakra-ui/icons';
+import { BsPersonCheck } from "react-icons/bs";
 import {
+  Avatar,
   Box,
   Collapse,
   Flex,
@@ -21,17 +23,22 @@ import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import { useApi } from '../utils/apiClient';
 
 export default function WithSubnavigation() {
-  const { isOpen, onToggle } = useDisclosure();
-
+  const menu = useDisclosure();
+  const authMenu = useDisclosure();
   const [userInfoData, setUserInfoData] = useState<any>([]);
   const [auth, setAuth] = useState<boolean>(false);
+  const [loaded, setLoaded] = useState<boolean>(false);
   const { getUserInfo } = useApi();
+  const toast = useToast();
 
   useEffect(() => {
     async function fetch() {
       const UserInfoResponse = await getUserInfo();
-      setUserInfoData(UserInfoResponse);
-      setAuth(true);
+      if (UserInfoResponse.id) {
+        setAuth(true);
+        setUserInfoData(UserInfoResponse);
+      }
+      setLoaded(true);
     }
     fetch();
   }, [getUserInfo]);
@@ -55,15 +62,20 @@ export default function WithSubnavigation() {
           display={{ base: 'flex', md: 'none' }}
         >
           <IconButton
-            onClick={onToggle}
-            icon={isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
+            onClick={menu.onToggle}
+            icon={menu.isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
             variant={'ghost'}
             aria-label={'Toggle Navigation'}
           />
         </Flex>
-        <Flex flex={{ base: 1, md: 'auto' }} justify={{ base: 'center', md: 'start' }}>
+        <Flex
+          flex={{ base: 1, md: 'auto' }}
+          justify={{ base: 'center', md: 'start' }}
+          alignContent={'center'}
+        >
           <Text
-            textAlign={useBreakpointValue({ base: 'center', md: 'left' })}
+            alignSelf={'center'}
+            textAlign={useBreakpointValue({ base: 'center', md: 'center' })}
             fontFamily={'heading'}
             color={useColorModeValue('gray.800', 'white')}
           >
@@ -74,16 +86,58 @@ export default function WithSubnavigation() {
             <DesktopNav navItems={NAV_ITEMS} />
           </Flex>
         </Flex>
-        <Flex display={{ base: '1' }} ml={10} justify={'flex-end'}>
-          <DesktopNav navItems={NAV_ITEMS_AUTH} />
+        <Flex display={{ base: 'none', md: 'flex' }} justify={'flex-end'}>
+          {loaded ? (
+            auth ? (
+              <Link
+                href={'/mecontrol'}
+                display={'flex'}
+                alignContent={'center'}
+                justifyContent={'center'}
+              >
+                <Avatar size="sm" variant={'ghost'} />
+              </Link>
+            ) : (
+              <DesktopNav navItems={NAV_ITEMS_AUTH} />
+            )
+          ) : (
+            <div />
+          )}
         </Flex>
-        <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
+        <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={2}>
+          <Flex
+            flex={{ base: 1, md: 'auto' }}
+            ml={{ base: -2 }}
+            display={{ base: 'flex', md: 'none' }}
+            justify={'flex-end'}
+            alignContent={'center'}
+          >
+            {loaded ? (
+              auth ? (
+                <Link href={'/mecontrol'} display={'flex'} alignContent={'center'}>
+                  <Avatar size="sm" variant={'ghost'} alignSelf={'center'} />
+                </Link>
+              ) : (
+                <IconButton
+                  onClick={authMenu.onToggle}
+                  icon={authMenu.isOpen ? <CloseIcon w={3} h={3} /> : <Icon as={BsPersonCheck} w={5} h={5} />}
+                  variant={'ghost'}
+                  aria-label={'Toggle Auth'}
+                />
+              )
+            ) : (
+              <div />
+            )}
+          </Flex>
           <ColorModeSwitcher justifySelf={'flex-end'} />
         </Stack>
       </Flex>
 
-      <Collapse in={isOpen} animateOpacity>
+      <Collapse in={menu.isOpen} animateOpacity>
         <MobileNav navItems={NAV_ITEMS} />
+      </Collapse>
+      <Collapse in={authMenu.isOpen} animateOpacity>
+        <MobileNav navItems={NAV_ITEMS_AUTH} />
       </Collapse>
     </Box>
   );
@@ -305,7 +359,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
     <Stack spacing={4} onClick={children && onToggle}>
       {isImplemented ? (
         <Flex
-          py={2}
+          py={1}
           as={Link}
           href={href ?? '#'}
           justify={'space-between'}
@@ -314,7 +368,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
             textDecoration: 'none',
           }}
         >
-          <Text fontWeight={600} color={linkColor}>
+          <Text fontWeight={400} color={linkColor} fontSize={'md'}>
             {label}
           </Text>
           {children && (
@@ -329,7 +383,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
         </Flex>
       ) : (
         <Flex
-          py={2}
+          py={1}
           as={Link}
           justify={'space-between'}
           align={'center'}
@@ -352,7 +406,7 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
             })
           }
         >
-          <Text fontWeight={600} color={linkColor}>
+          <Text fontWeight={400} color={linkColor} fontSize={'md'}>
             {label}
           </Text>
           {children && (
