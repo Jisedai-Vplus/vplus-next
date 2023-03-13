@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useState } from 'react';
 import { FormProvider, useForm, useFormContext } from 'react-hook-form';
-import PasswordStrengthBar from 'react-password-strength-bar';
 import { useLocation } from 'react-router-dom';
 
 import { useColorModeValue } from '@chakra-ui/color-mode';
@@ -15,9 +14,6 @@ import {
   Grid,
   GridItem,
   Input,
-  List,
-  ListIcon,
-  ListItem,
   StackDivider,
   Text,
   useMediaQuery,
@@ -84,14 +80,16 @@ const LoginView: React.FC = () => {
                   animate="visible"
                   variants={{
                     hidden: {
-                      scale: 0.8,
+                      scaleY: 0.01,
                       opacity: 0,
+                      y: "-70%"
                     },
                     visible: {
-                      scale: 1,
+                      scaleY: 1,
                       opacity: 1,
+                      y: 0,
                       transition: {
-                        delay: 0.2,
+                        duration: 0.5,
                       },
                     },
                   }}

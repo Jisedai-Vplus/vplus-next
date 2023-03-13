@@ -158,7 +158,7 @@ const ContributeView: React.FC = () => {
                         <Stack
                           direction="row"
                           spacing={10}
-                          ref={parent as React.RefObject<HTMLDivElement>}
+                          
                         >
                           <FormControl isRequired maxWidth={'44vh'}>
                             <FormLabel>推荐人的名字</FormLabel>
@@ -178,7 +178,7 @@ const ContributeView: React.FC = () => {
                               <Stack
                                 direction="row"
                                 spacing={5}
-                                ref={parent as React.RefObject<HTMLDivElement>}
+                                
                               >
                                 <Radio value="public" size={'md'} colorScheme={'teal'}>
                                   公开作文

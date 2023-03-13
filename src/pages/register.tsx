@@ -104,14 +104,17 @@ const RegisterView: React.FC = () => {
                   animate="visible"
                   variants={{
                     hidden: {
-                      scale: 0.8,
+                      scaleY: 0.01,
                       opacity: 0,
+                      y: "-60%"
                     },
                     visible: {
-                      scale: 1,
+                      scaleY: 1,
                       opacity: 1,
+                      y: 0,
                       transition: {
                         delay: 0.2,
+                        duration: 0.4,
                       },
                     },
                   }}
