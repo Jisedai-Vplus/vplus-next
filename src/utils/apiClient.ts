@@ -138,7 +138,7 @@ export function useApi(token?: string) {
       async (token?: string): Promise<UserApiReturn> =>
         (
           await axios.get<UserApiReturn>(
-            '/account/user_info',
+            '/auth/me',
             token
               ? {
                   headers: { authorization: `Bearer ${token}` },

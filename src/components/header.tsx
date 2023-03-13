@@ -16,10 +16,25 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { ColorModeSwitcher } from '../ColorModeSwitcher';
+import { useApi } from '../utils/apiClient';
 
 export default function WithSubnavigation() {
   const { isOpen, onToggle } = useDisclosure();
+
+  const [userInfoData, setUserInfoData] = useState<any>([]);
+  const [auth, setAuth] = useState<boolean>(false);
+  const { getUserInfo } = useApi();
+
+  useEffect(() => {
+    async function fetch() {
+      const UserInfoResponse = await getUserInfo();
+      setUserInfoData(UserInfoResponse);
+      setAuth(true);
+    }
+    fetch();
+  }, [getUserInfo]);
 
   return (
     <Box>
@@ -56,36 +71,121 @@ export default function WithSubnavigation() {
           </Text>
 
           <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-            <DesktopNav />
+            <DesktopNav navItems={NAV_ITEMS} />
           </Flex>
         </Flex>
-
+        <Flex display={{ base: '1' }} ml={10} justify={'flex-end'}>
+          <DesktopNav navItems={NAV_ITEMS_AUTH} />
+        </Flex>
         <Stack flex={{ base: 1, md: 0 }} justify={'flex-end'} direction={'row'} spacing={6}>
           <ColorModeSwitcher justifySelf={'flex-end'} />
         </Stack>
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav navItems={NAV_ITEMS} />
       </Collapse>
     </Box>
   );
 }
 
-const DesktopNav = () => {
+interface NavItem {
+  label: string;
+  subLabel?: string;
+  children?: Array<NavItem>;
+  href?: string;
+  isImplemented?: boolean;
+}
+
+const NAV_ITEMS: Array<NavItem> = [
+  /*
+  {
+    label: 'Inspiration',
+    children: [
+      {
+        label: 'Explore Design Work',
+        subLabel: 'Trending Design to inspire you',
+        href: '#',
+      },
+      {
+        label: 'New & Noteworthy',
+        subLabel: 'Up-and-coming Designers',
+        href: '#',
+      },
+    ],
+  },
+  */
+  {
+    label: '主页',
+    href: '/',
+    isImplemented: true,
+  },
+  {
+    label: '投稿提交',
+    href: '/contribute',
+    isImplemented: true,
+  },
+  /*
+  {
+    label: '观赏小作文',
+    href: '/view',
+    isImplemented: true,
+  },
+  */
+  {
+    label: '其他',
+    href: '/else',
+    isImplemented: false,
+  },
+];
+
+const NAV_ITEMS_AUTH: Array<NavItem> = [
+  /*
+  {
+    label: 'Inspiration',
+    children: [
+      {
+        label: 'Explore Design Work',
+        subLabel: 'Trending Design to inspire you',
+        href: '#',
+      },
+      {
+        label: 'New & Noteworthy',
+        subLabel: 'Up-and-coming Designers',
+        href: '#',
+      },
+    ],
+  },
+  */
+  {
+    label: '登录',
+    href: '/login',
+    isImplemented: true,
+  },
+  {
+    label: '注册',
+    href: '/register',
+    isImplemented: true,
+  },
+];
+
+const DesktopNav = (props: { navItems: Array<NavItem> }) => {
   const linkColor = useColorModeValue('gray.600', 'gray.200');
   const linkHoverColor = useColorModeValue('gray.800', 'white');
   const popoverContentBgColor = useColorModeValue('white', 'gray.800');
   const toast = useToast();
   return (
     <Stack direction={'row'} spacing={4}>
-      {NAV_ITEMS.map((navItem) => (
+      {props.navItems.map((navItem) => (
         <Box key={navItem.label}>
           <Popover trigger={'hover'} placement={'bottom-start'}>
             <PopoverTrigger>
               {navItem.isImplemented ? (
                 <Link
                   p={2}
+                  display={'flex'}
+                  alignContent={'center'}
+                  justifyContent={'center'}
                   href={navItem.href ?? ''}
                   fontSize={'sm'}
                   fontWeight={500}
@@ -101,6 +201,9 @@ const DesktopNav = () => {
                 <Link
                   p={2}
                   fontSize={'sm'}
+                  display={'flex'}
+                  alignContent={'center'}
+                  justifyContent={'center'}
                   fontWeight={500}
                   color={linkColor}
                   _hover={{
@@ -183,10 +286,10 @@ const DesktopSubNav = ({ label, href, subLabel }: NavItem) => {
   );
 };
 
-const MobileNav = () => {
+const MobileNav = (props: { navItems: Array<NavItem> }) => {
   return (
     <Stack bg={useColorModeValue('white', 'gray.800')} p={4} display={{ md: 'none' }}>
-      {NAV_ITEMS.map((navItem) => (
+      {props.navItems.map((navItem) => (
         <MobileNavItem key={navItem.label} {...navItem} />
       ))}
     </Stack>
@@ -284,53 +387,3 @@ const MobileNavItem = ({ label, children, href, isImplemented }: NavItem) => {
     </Stack>
   );
 };
-
-interface NavItem {
-  label: string;
-  subLabel?: string;
-  children?: Array<NavItem>;
-  href?: string;
-  isImplemented?: boolean;
-}
-
-const NAV_ITEMS: Array<NavItem> = [
-  /*
-  {
-    label: 'Inspiration',
-    children: [
-      {
-        label: 'Explore Design Work',
-        subLabel: 'Trending Design to inspire you',
-        href: '#',
-      },
-      {
-        label: 'New & Noteworthy',
-        subLabel: 'Up-and-coming Designers',
-        href: '#',
-      },
-    ],
-  },
-  */
-  {
-    label: '主页',
-    href: '/',
-    isImplemented: true,
-  },
-  {
-    label: '投稿提交',
-    href: '/contribute',
-    isImplemented: true,
-  },
-  /*
-  {
-    label: '观赏小作文',
-    href: '/view',
-    isImplemented: true,
-  },
-  */
-  {
-    label: '其他',
-    href: '/else',
-    isImplemented: false,
-  },
-];
