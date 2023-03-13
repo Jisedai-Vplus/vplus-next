@@ -131,7 +131,7 @@ export function useApi(token?: string) {
     ),
     postLogout: useCallback(
       async (): Promise<LogoutApiReturn> =>
-        (await axios.post<LogoutApiReturn>('account/logout/')).data,
+        (await axios.post<LogoutApiReturn>('/auth/logout')).data,
       [axios]
     ),
     getUserInfo: useCallback(

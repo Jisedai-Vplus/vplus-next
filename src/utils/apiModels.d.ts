@@ -41,7 +41,7 @@ export interface ChangePasswordApiReturn {
 
 // post Logout
 export interface LogoutApiReturn {
-  code: number;
+  logout: boolean;
 }
 
 // get User
@@ -53,11 +53,10 @@ export interface UserModel {
 
 export interface UserApiReturn {
   code: number;
-  data: {
-    username: string;
-    uid: number;
-    email: string;
-  };
+  username?: string;
+  id?: number;
+  email?: string;
+  msg?: string;
 }
 
 // get SearchSubscribe
